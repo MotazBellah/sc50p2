@@ -11,12 +11,14 @@
     <title>Chat - Login</title>
   </head>
   <body>
-      <div class="container-fluid">
+      <div  class="container">
           <h2>Login now!</h2>
-          <p>Enter your username/password to start</p>
+          <p>Enter your username to start</p>
 
           <form action="{{ url_for('login') }}" method="post">
-              <input type="text" name="username" value="" placeholder="Please enter your username">
+              <div class="form-group">
+                  <input type="text"  class="form-control" name="username" value="" placeholder="Please enter your username">
+              </div>
               <input type="submit" value="Login" class="btn btn-warning">
           </form>
       </div>

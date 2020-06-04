@@ -63,9 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
             },
             success: function(response) {
                 window.location.href = '/uploads/' + file_name
-            },
-            error: function(){
-                alert("The file not found")
             }
         });
 

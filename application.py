@@ -43,9 +43,6 @@ def upload_file():
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
-    print('||||||||||||||||||||||||||')
-    print(send_from_directory(app.config['UPLOAD_FOLDER'],filename))
-    print('||||||||||||||||||||||||||')
     return send_from_directory(app.config['UPLOAD_FOLDER'],
                                filename)
 
@@ -59,11 +56,6 @@ def index():
         username = session['username']
     else:
         return redirect(url_for('login'))
-
-    print('//////////////////////')
-    print(mesage)
-    print(ROOMS)
-    print('//////////////////////')
 
     return render_template('chat.html', username=username, login=login, ROOMS=ROOMS)
 
@@ -127,11 +119,12 @@ def logout():
 def message(data):
     x = data
     x['time_stamp'] = strftime('%b-%d %I:%M%p', localtime())
-    if len(mesage[data['room'].lower()]) < 100:
-        mesage[data['room'].lower()].append(x)
-    else:
-        mesage[data['room'].lower()].pop(0)
-        mesage[data['room'].lower()].append(x)
+    if data['room'] in mesage:
+        if len(mesage[data['room'].lower()]) < 5:
+            mesage[data['room'].lower()].append(x)
+        else:
+            mesage[data['room'].lower()].pop(0)
+            mesage[data['room'].lower()].append(x)
 
     send({'msg': data['msg'], 'username': data['username'],
           'time_stamp': strftime('%b-%d %I:%M%p', localtime())}, room=data['room'].lower())
@@ -140,8 +133,9 @@ def message(data):
 # server-side event handler to join the room
 @socketio.on('join')
 def join(data):
-    join_room(data['room'])
-    send({"msg": data['username'] + " has joined the " + data['room'] + " room."}, room=data['room'])
+    if ROOMS:
+        join_room(data['room'])
+        send({"msg": data['username'] + " has joined the " + data['room'] + " room."}, room=data['room'])
 
 
 # server-side event handler to leave the room
@@ -160,5 +154,5 @@ def create(data):
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=True)
-    # socketio.run(app)
+    # app.run(host='0.0.0.0', port=port, debug=True)
+    socketio.run(app, host='0.0.0.0', port=port)
